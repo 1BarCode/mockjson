@@ -3,8 +3,10 @@ package com.mycompany.mockjson.post;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.mycompany.mockjson.comment.Comment;
@@ -15,7 +17,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -28,14 +29,18 @@ import jakarta.persistence.TemporalType;
 @Table(name = "post")
 public class Post {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private int id;
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(name = "id", unique = true, nullable = false, updatable = false, columnDefinition = "BINARY(16)")
+    private UUID id;
 
     @Column(name = "title", nullable = false, length = 50)
     private String title;
 
-    @Column(name = "content", nullable = false, length = 255)
+    @Column(name = "slug", nullable = false, unique = true, length = 255)
+    private String slug;
+
+    @Column(name = "content", nullable = false)
     private String content;
 
     @CreationTimestamp
@@ -54,18 +59,18 @@ public class Post {
     private User user;
 
     // when post is deleted also delete all comments
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval = true)
+    @OneToMany(mappedBy = "post", cascade = { CascadeType.ALL }, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
-    // when post is deleted also delete all post likes
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval = true)
+    // post likes mapped by postlikeid's post
+    @OneToMany(mappedBy = "id.post", cascade = { CascadeType.ALL }, orphanRemoval = true)
     private List<PostLike> postLikes;
 
-    public int getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

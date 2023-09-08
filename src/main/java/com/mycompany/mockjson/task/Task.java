@@ -1,4 +1,4 @@
-package com.mycompany.mockjson.comment;
+package com.mycompany.mockjson.task;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -7,11 +7,12 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.mycompany.mockjson.post.Post;
 import com.mycompany.mockjson.user.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -22,21 +23,26 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
 @Entity
-@Table(name = "comment")
-public class Comment {
+@Table(name = "task")
+public class Task {
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(name = "id", unique = true, nullable = false, updatable = false, columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(name = "slug", unique = true, nullable = false, updatable = false, columnDefinition = "BINARY(16)")
-    private UUID slug;
+    @Column(name = "title", nullable = false, length = 50)
+    private String title;
 
-    @Column(name = "content", nullable = false)
-    private String content;
+    @Column(name = "slug", nullable = false, unique = true, length = 255)
+    private String slug;
+
+    @Column(name = "description", nullable = false)
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, columnDefinition = "ENUM('TODO', 'PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED')")
+    private TaskStatus status;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
@@ -49,14 +55,15 @@ public class Comment {
     private Instant updatedAt;
 
     // relationships
-    @ManyToOne(fetch = FetchType.LAZY) // when comment is deleted no need to delete post (no cascade by default)
-    @JoinColumn(name = "post_id")
-    private Post post;
-
-    // when comment is deleted no need to delete user (no cascade by default)
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY) // when task is deleted no need to delete user (no cascade by default)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Override
+    public String toString() {
+        return "Task [id=" + id + ", title=" + title + ", slug=" + slug + ", description=" + description + ", status="
+                + status + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", user=" + user.getId() + "]";
+    }
 
     public UUID getId() {
         return id;
@@ -66,12 +73,36 @@ public class Comment {
         this.id = id;
     }
 
-    public String getContent() {
-        return content;
+    public String getTitle() {
+        return title;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public TaskStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TaskStatus status) {
+        this.status = status;
     }
 
     public Instant getCreatedAt() {
@@ -90,26 +121,12 @@ public class Comment {
         this.updatedAt = updatedAt;
     }
 
-    public Post getPost() {
-        return post;
-    }
-
-    public void setPost(Post post) {
-        this.post = post;
-    }
-
     public User getUser() {
         return user;
     }
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    @Override
-    public String toString() {
-        return "Comment [id=" + id + ", content=" + content + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt
-                + ", post=" + post.getId() + ", user=" + user.getId() + "]";
     }
 
 }

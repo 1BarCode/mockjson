@@ -8,17 +8,18 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.mycompany.mockjson.comment.Comment;
 import com.mycompany.mockjson.post.Post;
 import com.mycompany.mockjson.post.PostLike;
+import com.mycompany.mockjson.task.Task;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -30,8 +31,9 @@ import jakarta.persistence.TemporalType;
 public class User {
     // fields
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", nullable = false, unique = true, length = 36)
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2") // uuid2 means uuid stored as binary(16)
+    @Column(name = "id", unique = true, nullable = false, updatable = false, columnDefinition = "BINARY(16)")
     private UUID id;
 
     @Column(name = "username", nullable = false, unique = true, length = 50)
@@ -63,8 +65,11 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "id.user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PostLike> postLikes = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Task> tasks = new ArrayList<>();
 
     public UUID getId() {
         return id;
@@ -122,6 +127,12 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
+    @Override
+    public String toString() {
+        return "User [id=" + id + ", username=" + username + ", email=" + email + ", firstName=" + firstName
+                + ", lastName=" + lastName + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
+    }
+
     public List<Post> getPosts() {
         return posts;
     }
@@ -154,17 +165,19 @@ public class User {
 
     public void addPostLike(PostLike postLike) {
         postLikes.add(postLike);
-        postLike.setUser(this);
+        postLike.getId().setUser(this);
     }
 
     public void setPostLikes(Set<PostLike> postLikes) {
         this.postLikes = postLikes;
     }
 
-    @Override
-    public String toString() {
-        return "User [id=" + id + ", username=" + username + ", email=" + email + ", firstName=" + firstName
-                + ", lastName=" + lastName + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
     }
 
 }
