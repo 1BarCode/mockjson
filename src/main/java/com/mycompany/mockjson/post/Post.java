@@ -8,9 +8,11 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.validator.constraints.Length;
 
 import com.mycompany.mockjson.comment.Comment;
 import com.mycompany.mockjson.user.User;
+import com.mycompany.mockjson.util.validation.Update;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -24,6 +26,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "post")
@@ -32,15 +35,22 @@ public class Post {
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(name = "id", unique = true, nullable = false, updatable = false, columnDefinition = "BINARY(16)")
+    @NotNull(message = "Id cannot be null", groups = { Update.class })
     private UUID id;
 
-    @Column(name = "title", nullable = false, length = 50)
-    private String title;
-
     @Column(name = "slug", nullable = false, unique = true, length = 255)
+    @NotNull(message = "Slug cannot be null", groups = { Update.class })
+    @Length(min = 17, max = 255, message = "Slug must be between 17 and 255 characters", groups = { Update.class })
     private String slug;
 
+    @Column(name = "title", nullable = false, length = 50)
+    @NotNull(message = "Title cannot be null")
+    @Length(min = 5, max = 50, message = "Title must be between 5 and 50 characters")
+    private String title;
+
     @Column(name = "content", nullable = false)
+    @NotNull(message = "Content cannot be null")
+    @Length(min = 25, message = "Content must be at least 25 characters")
     private String content;
 
     @CreationTimestamp
@@ -112,6 +122,30 @@ public class Post {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public List<PostLike> getPostLikes() {
+        return postLikes;
+    }
+
+    public void setPostLikes(List<PostLike> postLikes) {
+        this.postLikes = postLikes;
     }
 
     @Override

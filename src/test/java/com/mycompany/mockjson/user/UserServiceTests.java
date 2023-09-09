@@ -16,7 +16,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.mycompany.mockjson.exception.DuplicateUserNameException;
+import com.mycompany.mockjson.exception.DuplicateResourceException;
 import com.mycompany.mockjson.exception.ResourceNotFoundException;
 import com.mycompany.mockjson.util.DataGenerator;
 
@@ -52,7 +52,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void createUserTestSuccess() throws DuplicateUserNameException {
+    public void createUserTestSuccess() throws DuplicateResourceException {
         // Arrange
         when(userRepo.findByUsername(user.getUsername())).thenReturn(Optional.empty());
         when(userRepo.save(user)).thenReturn(user);
@@ -76,8 +76,8 @@ public class UserServiceTests {
         User createdUser;
 
         try {
-            createdUser = userService.createUser(user); // test that this method correctly calls userRepo.findByUsername(user.getUsername()) and throws a DuplicateUserNameException when findByUsername returns a non-empty Optional
-        } catch (DuplicateUserNameException e) {
+            createdUser = userService.createUser(user); // test that this method correctly calls userRepo.findByUsername(user.getUsername()) and throws a DuplicateResourceException when findByUsername returns a non-empty Optional
+        } catch (DuplicateResourceException e) {
             createdUser = null;
         }
 

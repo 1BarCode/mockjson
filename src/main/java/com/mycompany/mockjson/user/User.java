@@ -17,6 +17,7 @@ import com.mycompany.mockjson.comment.Comment;
 import com.mycompany.mockjson.post.Post;
 import com.mycompany.mockjson.post.PostLike;
 import com.mycompany.mockjson.task.Task;
+import com.mycompany.mockjson.util.validation.Update;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -38,7 +39,7 @@ public class User {
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2") // uuid2 means uuid stored as binary(16)
     @Column(name = "id", unique = true, nullable = false, updatable = false, columnDefinition = "BINARY(16)")
-    @NotNull(message = "Id cannot be null") // validation
+    @NotNull(message = "Id cannot be null", groups = { Update.class }) // validation
     private UUID id;
 
     @Column(name = "username", nullable = false, unique = true, length = 50)
@@ -49,7 +50,7 @@ public class User {
     @Column(name = "email", nullable = false, length = 50, unique = true)
     @NotNull(message = "Email cannot be null") // validation
     @Length(min = 4, max = 50, message = "Email must be between 3 and 50 characters") // validation
-    @Email(message = "Email must be valid") // validation
+    @Email(message = "Email must be valid", regexp = "^[A-Za-z0-9+_.-]+@(.+)$") // validation
     private String email;
 
     @Column(name = "first_name", nullable = false, length = 50)

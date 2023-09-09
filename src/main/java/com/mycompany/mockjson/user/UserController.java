@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,10 +15,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mycompany.mockjson.exception.DuplicateUserNameException;
+import com.mycompany.mockjson.exception.DuplicateResourceException;
 import com.mycompany.mockjson.exception.IdMismatchException;
 import com.mycompany.mockjson.exception.ResourceNotFoundException;
-import com.mycompany.mockjson.util.Validation;
+import com.mycompany.mockjson.util.validation.Update;
+import com.mycompany.mockjson.util.validation.Validation;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
@@ -31,17 +33,12 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody User user) throws DuplicateResourceException {
 
-        try {
-            User createdUser = userService.createUser(user);
-            URI uri = URI.create("/v1/users/" + createdUser.getId());
+        User createdUser = userService.createUser(user);
+        URI uri = URI.create("/v1/users/" + createdUser.getId());
 
-            return ResponseEntity.created(uri).body(createdUser);
-        } catch (DuplicateUserNameException e) {
-            return ResponseEntity.badRequest().build();
-        }
-
+        return ResponseEntity.created(uri).body(createdUser);
     }
 
     @GetMapping
@@ -67,7 +64,7 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUserById(
             @PathVariable("id") @Size(min = 36, max = 36, message = "Id must be 36 characters") String id,
-            @Valid @RequestBody User user) throws IdMismatchException {
+            @Validated(Update.class) @RequestBody User user) throws IdMismatchException {
 
         UUID uuid = null;
 
@@ -84,6 +81,21 @@ public class UserController {
         try {
             User updatedUser = userService.updateUserById(uuid, user);
             return ResponseEntity.ok(updatedUser);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUserById(
+            @PathVariable("id") @Size(min = 36, max = 36, message = "Id must be 36 characters") String id) {
+
+        try {
+            UUID uuid = Validation.getUUIDFromString(id);
+            userService.deleteUserById(uuid);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         }

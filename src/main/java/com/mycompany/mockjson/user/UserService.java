@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.mycompany.mockjson.exception.DuplicateUserNameException;
+import com.mycompany.mockjson.exception.DuplicateResourceException;
 import com.mycompany.mockjson.exception.ResourceNotFoundException;
 
 import jakarta.transaction.Transactional;
@@ -17,12 +17,17 @@ public class UserService {
     @Autowired
     private UserRepo userRepo;
 
-    public User createUser(User user) throws DuplicateUserNameException {
+    public User createUser(User user) throws DuplicateResourceException {
         // check if user with username already exists
         User existingUser = userRepo.findByUsername(user.getUsername()).orElse(null);
-
         if (existingUser != null) {
-            throw new DuplicateUserNameException("User with username: " + user.getUsername() + " already exists");
+            throw new DuplicateResourceException("Username is already taken");
+        }
+
+        // check if user with email already exists
+        existingUser = userRepo.findByEmail(user.getEmail()).orElse(null);
+        if (existingUser != null) {
+            throw new DuplicateResourceException("Email is already registered");
         }
 
         return userRepo.save(user);

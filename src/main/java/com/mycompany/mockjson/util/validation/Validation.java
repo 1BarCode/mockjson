@@ -1,4 +1,4 @@
-package com.mycompany.mockjson.util;
+package com.mycompany.mockjson.util.validation;
 
 import java.util.UUID;
 
