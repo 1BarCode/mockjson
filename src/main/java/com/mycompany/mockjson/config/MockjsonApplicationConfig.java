@@ -10,6 +10,7 @@ public class MockjsonApplicationConfig {
     public FlywayMigrationStrategy cleanMigrateStrategy() {
         return flyway -> {
             flyway.repair();
+            // flyway.clean();
             flyway.migrate();
         };
     }

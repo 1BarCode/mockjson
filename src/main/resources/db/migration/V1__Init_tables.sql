@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS `post_like`;
 
 -- create tables
 CREATE TABLE `user` (
-    `id` binary(16) NOT NULL,
+    `id` binary(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID())),
     `username` varchar(50) NOT NULL,
     `email` varchar(50) NOT NULL,
     `first_name` varchar(50) NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE `user` (
  ) ENGINE=InnoDB;
 
 CREATE TABLE `post` (
-    `id` binary(16) NOT NULL,
+    `id` binary(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID())),
     `title` varchar(50) NOT NULL,
     `slug` varchar(255) NOT NULL,
     `content` text NOT NULL,
@@ -35,20 +35,21 @@ CREATE TABLE `post` (
  ) ENGINE=InnoDB;
 
 CREATE TABLE `comment` (
-    `id` binary(16) NOT NULL,
-    `slug` binary(16) NOT NULL,
+    `id` binary(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID())),
+    `slug` varchar(255) NOT NULL,
     `content` text NOT NULL,
     `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `user_id` binary(16) NOT NULL,
     `post_id` binary(16) NOT NULL,
     PRIMARY KEY (`id`),
+    CONSTRAINT `comment_slug_unique` UNIQUE (`slug`),
     CONSTRAINT `comment_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
     CONSTRAINT `comment_post_id_fk` FOREIGN KEY (`post_id`) REFERENCES `post` (`id`) ON DELETE CASCADE
  ) ENGINE=InnoDB;
 
 CREATE TABLE `task` (
-    `id` binary(16) NOT NULL,
+    `id` binary(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID())),
     `title` varchar(50) NOT NULL,
     `slug` varchar(255) NOT NULL,
     `description` text NOT NULL,
@@ -66,7 +67,6 @@ CREATE TABLE `post_like` (
     `user_id` binary(16) NOT NULL,
     `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`post_id`, `user_id`),
-    CONSTRAINT UNIQUE (`post_id`, `user_id`),
     CONSTRAINT `post_like_post_id_fk` FOREIGN KEY (`post_id`) REFERENCES `post` (`id`) ON DELETE CASCADE,
     CONSTRAINT `post_like_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
  ) ENGINE=InnoDB;

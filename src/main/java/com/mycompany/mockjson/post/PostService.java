@@ -13,7 +13,7 @@ import com.mycompany.mockjson.util.validation.Validation;
 @Service
 public class PostService {
 
-    private static String tempUserId = "df043f72-0466-4fcc-9a15-111d50709f51";
+    private static String guestUserId = "df043f72-0466-4fcc-9a15-111d50709f51";
 
     @Autowired
     private PostRepo postRepo;
@@ -23,7 +23,7 @@ public class PostService {
 
     public Post createPost(Post post) throws IllegalArgumentException, ResourceNotFoundException {
         // get the user by id
-        UUID userId = Validation.getUUIDFromString(tempUserId);
+        UUID userId = Validation.getUUIDFromString(guestUserId);
         User user = userService.getUserById(userId);
 
         // generate a slug from the title

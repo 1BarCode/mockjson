@@ -2,6 +2,7 @@ package com.mycompany.mockjson.user;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -11,8 +12,11 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mycompany.mockjson.auth.authority.Authority;
 import com.mycompany.mockjson.comment.Comment;
 import com.mycompany.mockjson.post.Post;
 import com.mycompany.mockjson.post.PostLike;
@@ -22,6 +26,7 @@ import com.mycompany.mockjson.util.validation.Update;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -33,12 +38,12 @@ import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "user")
-public class User {
+public class User implements UserDetails {
     // fields
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2") // uuid2 means uuid stored as binary(16)
-    @Column(name = "id", unique = true, nullable = false, updatable = false, columnDefinition = "BINARY(16)")
+    @Column(name = "id", unique = true, nullable = false, updatable = false, columnDefinition = "BINARY(16) DEFAULT (UUID_TO_BIN(UUID()))")
     @NotNull(message = "Id cannot be null", groups = { Update.class }) // validation
     private UUID id;
 
@@ -49,9 +54,12 @@ public class User {
 
     @Column(name = "email", nullable = false, length = 50, unique = true)
     @NotNull(message = "Email cannot be null") // validation
-    @Length(min = 4, max = 50, message = "Email must be between 3 and 50 characters") // validation
+    @Length(min = 4, max = 50, message = "Email must be between 4 and 50 characters") // validation
     @Email(message = "Email must be valid", regexp = "^[A-Za-z0-9+_.-]+@(.+)$") // validation
     private String email;
+
+    @Column(name = "password", nullable = false, length = 255)
+    private String password;
 
     @Column(name = "first_name", nullable = false, length = 50)
     @NotNull(message = "First name cannot be null") // validation
@@ -65,15 +73,24 @@ public class User {
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Instant createdAt;
 
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Instant updatedAt;
 
+    @Column(name = "enabled", nullable = false, columnDefinition = "boolean default 1")
+    private boolean enabled;
+
+    @Column(name = "locked", nullable = false, columnDefinition = "boolean default 0")
+    private boolean locked;
+
     // relationships
+    @OneToMany(mappedBy = "id.user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<Authority> userAuthorities = new ArrayList<>();
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Post> posts = new ArrayList<>();
@@ -96,6 +113,43 @@ public class User {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
+    }
+
+    public List<Authority> getUserAuthorities() {
+        return userAuthorities;
+    }
+
+    public void setAuthorities(List<Authority> authorities) {
+        this.userAuthorities = authorities;
+    }
+
+    public void addAuthority(Authority authority) {
+        userAuthorities.add(authority);
+        authority.setUser(this);
     }
 
     public String getUsername() {
@@ -197,6 +251,30 @@ public class User {
 
     public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getAuthorities'");
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'isAccountNonExpired'");
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'isAccountNonLocked'");
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'isCredentialsNonExpired'");
     }
 
 }

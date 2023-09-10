@@ -19,26 +19,18 @@ public class UserService {
 
     public User createUser(User user) throws DuplicateResourceException {
         // check if user with username already exists
-        User existingUser = userRepo.findByUsername(user.getUsername()).orElse(null);
-        if (existingUser != null) {
-            throw new DuplicateResourceException("Username is already taken");
-        }
+        userRepo.findByUsername(user.getUsername())
+                .orElseThrow(() -> new DuplicateResourceException("Username is already taken"));
 
         // check if user with email already exists
-        existingUser = userRepo.findByEmail(user.getEmail()).orElse(null);
-        if (existingUser != null) {
-            throw new DuplicateResourceException("Email is already registered");
-        }
+        userRepo.findByEmail(user.getEmail())
+                .orElseThrow(() -> new DuplicateResourceException("Email is already registered"));
 
         return userRepo.save(user);
     }
 
     public User getUserById(UUID id) throws ResourceNotFoundException {
-        User existingUser = userRepo.findById(id).orElse(null);
-
-        if (existingUser == null) {
-            throw new ResourceNotFoundException("User not found with id: " + id);
-        }
+        User existingUser = userRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         return existingUser;
     }
@@ -48,11 +40,7 @@ public class UserService {
     }
 
     public User updateUserById(UUID id, User user) throws ResourceNotFoundException {
-        User existingUser = userRepo.findById(id).orElse(null);
-
-        if (existingUser == null) {
-            throw new ResourceNotFoundException("User not found with id: " + id);
-        }
+        User existingUser = userRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         existingUser.setUsername(user.getUsername());
         existingUser.setEmail(user.getEmail());
@@ -63,11 +51,7 @@ public class UserService {
     }
 
     public void deleteUserById(UUID id) throws ResourceNotFoundException {
-        User existingUser = userRepo.findById(id).orElse(null);
-
-        if (existingUser == null) {
-            throw new ResourceNotFoundException("User not found with id: " + id);
-        }
+        User existingUser = userRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         userRepo.delete(existingUser);
     }

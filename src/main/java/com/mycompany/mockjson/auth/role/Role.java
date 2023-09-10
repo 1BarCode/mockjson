@@ -1,40 +1,43 @@
-package com.mycompany.mockjson.comment;
+package com.mycompany.mockjson.auth.role;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.mycompany.mockjson.post.Post;
-import com.mycompany.mockjson.user.User;
+import com.mycompany.mockjson.auth.authority.Authority;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
 @Entity
-@Table(name = "comment")
-public class Comment {
+@Table(name = "role")
+public class Role {
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(name = "id", unique = true, nullable = false, updatable = false, columnDefinition = "BINARY(16) DEFAULT (UUID_TO_BIN(UUID()))")
     private UUID id;
 
-    @Column(name = "slug", unique = true, nullable = false, updatable = false)
-    private String slug;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "name", nullable = false, unique = true)
+    private RoleName name;
 
-    @Column(name = "content", nullable = false, length = 255)
-    private String content;
+    @Column(name = "description", nullable = false, length = 255)
+    private String description;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
@@ -47,14 +50,8 @@ public class Comment {
     private Instant updatedAt;
 
     // relationships
-    @ManyToOne(fetch = FetchType.LAZY) // when comment is deleted no need to delete post (no cascade by default)
-    @JoinColumn(name = "post_id")
-    private Post post;
-
-    // when comment is deleted no need to delete user (no cascade by default)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @OneToMany(mappedBy = "id.role", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Authority> authorities = new ArrayList<>();
 
     public UUID getId() {
         return id;
@@ -64,12 +61,20 @@ public class Comment {
         this.id = id;
     }
 
-    public String getContent() {
-        return content;
+    public RoleName getName() {
+        return name;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setName(RoleName name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Instant getCreatedAt() {
@@ -88,26 +93,9 @@ public class Comment {
         this.updatedAt = updatedAt;
     }
 
-    public Post getPost() {
-        return post;
-    }
-
-    public void setPost(Post post) {
-        this.post = post;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     @Override
     public String toString() {
-        return "Comment [id=" + id + ", content=" + content + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt
-                + ", post=" + post.getId() + ", user=" + user.getId() + "]";
+        return name.name();
     }
 
 }

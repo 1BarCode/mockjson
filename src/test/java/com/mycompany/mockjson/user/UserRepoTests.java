@@ -34,6 +34,7 @@ public class UserRepoTests {
         user.setEmail(email);
         user.setFirstName(firstName);
         user.setLastName(lastName);
+        user.setPassword("password");
 
         User savedUser = userRepo.save(user);
 
