@@ -22,6 +22,6 @@ CREATE TABLE `authority` (
 
 ALTER TABLE `user`
     ADD COLUMN `password` varchar(255) NOT NULL AFTER `email`,
-    ADD COLUMN `enabled` boolean NOT NULL DEFAULT 1,
-    ADD COLUMN `locked` boolean NOT NULL DEFAULT 0;
+    ADD COLUMN `enabled` tinyint(1) NOT NULL DEFAULT 1,
+    ADD COLUMN `locked` tinyint(1) NOT NULL DEFAULT 0;
     

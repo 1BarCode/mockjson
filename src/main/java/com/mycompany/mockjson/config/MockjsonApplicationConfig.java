@@ -9,8 +9,8 @@ public class MockjsonApplicationConfig {
     @Bean
     public FlywayMigrationStrategy cleanMigrateStrategy() {
         return flyway -> {
-            flyway.repair();
-            // flyway.clean();
+            // flyway.repair();
+            flyway.clean();
             flyway.migrate();
         };
     }

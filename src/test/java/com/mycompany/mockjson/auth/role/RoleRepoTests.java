@@ -45,6 +45,8 @@ public class RoleRepoTests {
         user.setLastName("user");
         user.setEmail(user.getFirstName() + user.getLastName() + "@umail.com");
         user.setPassword("password");
+        user.setEnabled(true);
+        user.setLocked(false);
 
         Role role = roleRepo.findByName(RoleName.ROLE_USER);
 
@@ -57,5 +59,7 @@ public class RoleRepoTests {
         User savedUser = userRepo.save(user);
 
         assertNotEquals(null, savedUser);
+        assertEquals(true, savedUser.getEnabled());
+        assertEquals(false, savedUser.isLocked());
     }
 }

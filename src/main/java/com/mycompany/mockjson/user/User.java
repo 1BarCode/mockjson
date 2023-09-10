@@ -81,10 +81,10 @@ public class User implements UserDetails {
     @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Instant updatedAt;
 
-    @Column(name = "enabled", nullable = false, columnDefinition = "boolean default 1")
+    @Column(name = "enabled", nullable = false, columnDefinition = "tinyint(1) default 1")
     private boolean enabled;
 
-    @Column(name = "locked", nullable = false, columnDefinition = "boolean default 0")
+    @Column(name = "locked", nullable = false, columnDefinition = "tinyint(1) default 0")
     private boolean locked;
 
     // relationships
@@ -124,6 +124,10 @@ public class User implements UserDetails {
     }
 
     public boolean isEnabled() {
+        return enabled;
+    }
+
+    public boolean getEnabled() {
         return enabled;
     }
 
