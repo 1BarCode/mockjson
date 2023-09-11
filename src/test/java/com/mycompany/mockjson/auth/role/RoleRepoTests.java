@@ -38,7 +38,7 @@ public class RoleRepoTests {
     }
 
     @Test
-    public void testCreateUserWithRole() {
+    public void testCreateUserWithRole() throws Exception {
         User user = new User();
         user.setUsername("test");
         user.setFirstName("test");
@@ -48,7 +48,7 @@ public class RoleRepoTests {
         user.setEnabled(true);
         user.setLocked(false);
 
-        Role role = roleRepo.findByName(RoleName.ROLE_USER);
+        Role role = roleRepo.findByName(RoleName.ROLE_USER).orElseThrow(() -> new Exception("Something went wrong"));
 
         Authority authority = new Authority();
         authority.setUser(user);

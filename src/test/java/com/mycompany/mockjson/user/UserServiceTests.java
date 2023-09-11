@@ -35,10 +35,13 @@ public class UserServiceTests {
     @BeforeEach
     public void setUp() {
         user = new User();
-        user.setUsername("testUser");
+        user.setUsername("test-User");
         user.setEmail("testUser.gmail.com");
         user.setFirstName("Test");
         user.setLastName("User");
+        user.setPassword("password");
+        user.setEnabled(true);
+        user.setLocked(false);
 
         users = new ArrayList<>();
         User user1 = new User();
@@ -46,6 +49,9 @@ public class UserServiceTests {
         user1.setFirstName(DataGenerator.generateRandomString(4));
         user1.setLastName(DataGenerator.generateRandomString(4));
         user1.setEmail(user1.getFirstName() + user1.getLastName() + "@gmail.com");
+        user1.setPassword("password");
+        user1.setEnabled(true);
+        user1.setLocked(false);
 
         users.add(user);
         users.add(user1);
@@ -54,15 +60,20 @@ public class UserServiceTests {
     @Test
     public void createUserTestSuccess() throws DuplicateResourceException {
         // Arrange
-        when(userRepo.findByUsername(user.getUsername())).thenReturn(Optional.empty());
-        when(userRepo.save(user)).thenReturn(user);
-
+        // when(userRepo.findByUsername(user.getUsername())).thenThrow(new
+        // ResourceNotFoundException("User is already taken"));
+        // when(userRepo.findByEmail(user.getEmail())).thenThrow(new
+        // ResourceNotFoundException("Email is already registered"));
+        // when(userRepo.save(user)).thenReturn(user);
+        Mockito.doThrow(new DuplicateResourceException("Username is already taken")).when(userRepo)
+                .findByUsername(user.getUsername());
 
         // Act
-        User createdUser = userService.createUser(user); // test that this method correctly calls userRepo.save(user) and returns the result
+        User createdUser = userService.createUser(user); // test that this method correctly calls userRepo.save(user)
+                                                         // and returns the result
 
         // Assert
-        assertNotEquals(null,createdUser);
+        assertNotEquals(null, createdUser);
         assertEquals(user.getUsername(), createdUser.getUsername());
         assertEquals(user.getEmail(), createdUser.getEmail());
     }

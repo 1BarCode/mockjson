@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.mycompany.mockjson.exception.DuplicateResourceException;
@@ -18,6 +19,9 @@ public class UserService {
     private UserRepo userRepo;
 
     public User createUser(User user) throws DuplicateResourceException {
+        user.setEnabled(true);
+        user.setLocked(false);
+
         // check if user with username already exists
         userRepo.findByUsername(user.getUsername())
                 .orElseThrow(() -> new DuplicateResourceException("Username is already taken"));
@@ -29,9 +33,14 @@ public class UserService {
         return userRepo.save(user);
     }
 
-    public User getUserById(UUID id) throws ResourceNotFoundException {
-        User existingUser = userRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    public User getUserById(UUID id) throws UsernameNotFoundException {
+        User existingUser = userRepo.findById(id).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return existingUser;
+    }
 
+    public User getUserByUsername(String username) throws UsernameNotFoundException {
+        User existingUser = userRepo.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return existingUser;
     }
 

@@ -2,33 +2,24 @@ package com.mycompany.mockjson.auth;
 
 import org.hibernate.validator.constraints.Length;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 
 public class AuthenticationRequest {
+
     @NotNull
-    @Email
     @Length(min = 4, max = 50)
-    private String email;
+    private String username;
 
     @NotNull
     @Length(min = 7, max = 255)
     private String password;
 
-    public AuthenticationRequest() {
+    public String getUsername() {
+        return username;
     }
 
-    public AuthenticationRequest(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {
