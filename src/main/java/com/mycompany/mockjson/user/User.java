@@ -17,7 +17,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.mycompany.mockjson.auth.authority.Authority;
+import com.mycompany.mockjson.auth.userpermission.UserPermission;
 import com.mycompany.mockjson.comment.Comment;
 import com.mycompany.mockjson.post.Post;
 import com.mycompany.mockjson.post.PostLike;
@@ -90,7 +90,7 @@ public class User implements UserDetails {
 
     // relationships
     @OneToMany(mappedBy = "id.user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<Authority> userAuthorities = new ArrayList<>();
+    private List<UserPermission> userPermissions = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
@@ -144,17 +144,17 @@ public class User implements UserDetails {
         this.locked = locked;
     }
 
-    public List<Authority> getUserAuthorities() {
-        return userAuthorities;
+    public List<UserPermission> getUserPermissions() {
+        return userPermissions;
     }
 
-    public void setAuthorities(List<Authority> authorities) {
-        this.userAuthorities = authorities;
+    public void setUserPermissions(List<UserPermission> userPermissions) {
+        this.userPermissions = userPermissions;
     }
 
-    public void addAuthority(Authority authority) {
-        userAuthorities.add(authority);
-        authority.setUser(this);
+    public void addUserPermission(UserPermission userPermission) {
+        userPermissions.add(userPermission);
+        userPermission.setUser(this);
     }
 
     public String getUsername() {
@@ -262,8 +262,8 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
 
-        userAuthorities.forEach(authority -> {
-            authorities.add(new SimpleGrantedAuthority(authority.getRole().getName().name()));
+        userPermissions.forEach(userPermission -> {
+            authorities.add(new SimpleGrantedAuthority(userPermission.getPermission().getName().name()));
         });
 
         return authorities;

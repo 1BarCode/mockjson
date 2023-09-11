@@ -1,8 +1,8 @@
-package com.mycompany.mockjson.auth.authority;
+package com.mycompany.mockjson.auth.userpermission;
 
 import java.io.Serializable;
 
-import com.mycompany.mockjson.auth.role.Role;
+import com.mycompany.mockjson.auth.permission.Permission;
 import com.mycompany.mockjson.user.User;
 
 import jakarta.persistence.CascadeType;
@@ -11,14 +11,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 @Embeddable
-public class AuthorityId implements Serializable {
+public class UserPermissionId implements Serializable {
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
     @JoinColumn(name = "user_id", nullable = false, updatable = false, columnDefinition = "BINARY(16)")
     private User user;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
-    @JoinColumn(name = "role_id", nullable = false, updatable = false, columnDefinition = "BINARY(16)")
-    private Role role;
+    @JoinColumn(name = "permission_id", nullable = false, updatable = false, columnDefinition = "BINARY(16)")
+    private Permission permission;
 
     public User getUser() {
         return user;
@@ -28,12 +28,12 @@ public class AuthorityId implements Serializable {
         this.user = user;
     }
 
-    public Role getRole() {
-        return role;
+    public Permission getpermission() {
+        return permission;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    public void setpermission(Permission permission) {
+        this.permission = permission;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class AuthorityId implements Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((user == null) ? 0 : user.hashCode());
-        result = prime * result + ((role == null) ? 0 : role.hashCode());
+        result = prime * result + ((permission == null) ? 0 : permission.hashCode());
         return result;
     }
 
@@ -53,16 +53,16 @@ public class AuthorityId implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        AuthorityId other = (AuthorityId) obj;
+        UserPermissionId other = (UserPermissionId) obj;
         if (user == null) {
             if (other.user != null)
                 return false;
         } else if (!user.equals(other.user))
             return false;
-        if (role == null) {
-            if (other.role != null)
+        if (permission == null) {
+            if (other.permission != null)
                 return false;
-        } else if (!role.equals(other.role))
+        } else if (!permission.equals(other.permission))
             return false;
         return true;
     }

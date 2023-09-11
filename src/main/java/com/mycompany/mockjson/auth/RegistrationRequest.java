@@ -5,7 +5,7 @@ import org.hibernate.validator.constraints.Length;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 
-public class RegisterRequest {
+public class RegistrationRequest {
     @NotNull
     @Length(min = 4, max = 50)
     private String username;

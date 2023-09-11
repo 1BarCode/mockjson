@@ -1,4 +1,4 @@
-package com.mycompany.mockjson.auth.role;
+package com.mycompany.mockjson.auth.permission;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.mycompany.mockjson.auth.authority.Authority;
+import com.mycompany.mockjson.auth.userpermission.UserPermission;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -24,8 +24,8 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
 @Entity
-@Table(name = "role")
-public class Role {
+@Table(name = "permission")
+public class Permission {
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
@@ -34,7 +34,7 @@ public class Role {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "name", nullable = false, unique = true)
-    private RoleName name;
+    private PermissionName name;
 
     @Column(name = "description", nullable = false, length = 255)
     private String description;
@@ -50,8 +50,8 @@ public class Role {
     private Instant updatedAt;
 
     // relationships
-    @OneToMany(mappedBy = "id.role", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Authority> authorities = new ArrayList<>();
+    @OneToMany(mappedBy = "id.permission", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserPermission> userpermission = new ArrayList<>();
 
     public UUID getId() {
         return id;
@@ -61,11 +61,11 @@ public class Role {
         this.id = id;
     }
 
-    public RoleName getName() {
+    public PermissionName getName() {
         return name;
     }
 
-    public void setName(RoleName name) {
+    public void setName(PermissionName name) {
         this.name = name;
     }
 
@@ -91,6 +91,14 @@ public class Role {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public List<UserPermission> getUserpermission() {
+        return userpermission;
+    }
+
+    public void setUserpermission(List<UserPermission> userpermission) {
+        this.userpermission = userpermission;
     }
 
     @Override

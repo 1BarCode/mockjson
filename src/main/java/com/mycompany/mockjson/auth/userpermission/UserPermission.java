@@ -1,10 +1,10 @@
-package com.mycompany.mockjson.auth.authority;
+package com.mycompany.mockjson.auth.userpermission;
 
 import java.time.Instant;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.mycompany.mockjson.auth.role.Role;
+import com.mycompany.mockjson.auth.permission.Permission;
 import com.mycompany.mockjson.user.User;
 
 import jakarta.persistence.Column;
@@ -16,21 +16,21 @@ import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
 
 @Entity
-@Table(name = "authority")
-public class Authority {
+@Table(name = "user_permission")
+public class UserPermission {
     @EmbeddedId
-    private AuthorityId id = new AuthorityId();
+    private UserPermissionId id = new UserPermissionId();
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Instant createdAt;
 
-    public AuthorityId getId() {
+    public UserPermissionId getId() {
         return id;
     }
 
-    public void setId(AuthorityId id) {
+    public void setId(UserPermissionId id) {
         this.id = id;
     }
 
@@ -52,17 +52,17 @@ public class Authority {
     }
 
     @Transient
-    public Role getRole() {
-        return id.getRole();
+    public Permission getPermission() {
+        return id.getpermission();
     }
 
-    public void setRole(Role role) {
-        id.setRole(role);
+    public void setPermission(Permission permission) {
+        id.setpermission(permission);
     }
 
     @Override
     public String toString() {
-        return "Authority [" + id.getUser().getUsername() + ", " + id.getRole().getName() + "]";
+        return "Authority [" + id.getUser().getUsername() + ", " + id.getpermission().getName() + "]";
     }
 
 }

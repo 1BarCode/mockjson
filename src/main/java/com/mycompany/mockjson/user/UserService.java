@@ -5,8 +5,10 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.mycompany.mockjson.auth.RegistrationRequest;
 import com.mycompany.mockjson.exception.DuplicateResourceException;
 import com.mycompany.mockjson.exception.ResourceNotFoundException;
 
@@ -18,10 +20,30 @@ public class UserService {
     @Autowired
     private UserRepo userRepo;
 
-    public User createUser(User user) throws DuplicateResourceException {
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    /**
+     * Construct a user with information from a RegisterRequest, the user has not
+     * been persisted.
+     * 
+     * @param request
+     * @return unpersisted user
+     */
+    public User constructUserFromRequest(RegistrationRequest request) {
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setEmail(request.getEmail());
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
         user.setEnabled(true);
         user.setLocked(false);
 
+        return user;
+    }
+
+    public User createUser(User user) throws DuplicateResourceException {
         // check if user with username already exists
         userRepo.findByUsername(user.getUsername())
                 .orElseThrow(() -> new DuplicateResourceException("Username is already taken"));
