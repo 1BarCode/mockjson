@@ -11,6 +11,6 @@ public interface PermissionRepo extends JpaRepository<Permission, UUID> {
     @Query("SELECT p FROM Permission p WHERE p.name = ?1")
     Optional<Permission> findByName(PermissionName name);
 
-    @Query("SELECT p FROM Permission p WHERE p.name LIKE ?1%")
-    Optional<List<Permission>> findByNameStartsWith(String name);
+    @Query("SELECT p FROM Permission p WHERE p.name LIKE ?1")
+    List<Permission> findByNameStartsWith(PermissionName name);
 }

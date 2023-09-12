@@ -28,7 +28,7 @@ public class UserPermissionId implements Serializable {
         this.user = user;
     }
 
-    public Permission getpermission() {
+    public Permission getPermission() {
         return permission;
     }
 

@@ -13,6 +13,7 @@ import com.mycompany.mockjson.auth.userpermission.UserPermission;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -32,7 +33,7 @@ public class Permission {
     @Column(name = "id", unique = true, nullable = false, updatable = false, columnDefinition = "BINARY(16) DEFAULT (UUID_TO_BIN(UUID()))")
     private UUID id;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = PermissionNameConverter.class)
     @Column(name = "name", nullable = false, unique = true)
     private PermissionName name;
 

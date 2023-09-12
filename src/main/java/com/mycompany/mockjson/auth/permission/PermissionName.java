@@ -5,6 +5,7 @@ package com.mycompany.mockjson.auth.permission;
  */
 public enum PermissionName {
     // general role-based permissions
+    GENERAL_USER("general_user:%"),
     GENERAL_USER_READ("general_user:read"),
     GENERAL_USER_WRITE("general_user:write"),
     GENERAL_USER_DELETE("general_user:delete"),
@@ -41,5 +42,15 @@ public enum PermissionName {
 
     public String getPermission() {
         return permission;
+    }
+
+    public static PermissionName fromString(String permission) {
+        for (PermissionName p : PermissionName.values()) {
+            if (p.getPermission().equals(permission)) {
+                return p;
+            }
+        }
+
+        return null;
     }
 }

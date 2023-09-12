@@ -2,6 +2,7 @@ package com.mycompany.mockjson.auth;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,8 +18,10 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+    @Autowired
     private JwtService jwtService;
 
+    @Autowired
     private UserDetailsService userDetailsService;
 
     @Override
@@ -34,8 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String jwt = authHeader.substring(7);
         String username = jwtService.extractUsername(jwt);
 
-        Boolean isAlreadyAuthenticated = SecurityContextHolder.getContext().getAuthentication() != null
-                && SecurityContextHolder.getContext().getAuthentication().isAuthenticated();
+        Boolean isAlreadyAuthenticated = SecurityContextHolder.getContext().getAuthentication() != null;
 
         if (username != null && !isAlreadyAuthenticated) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username); // get user details from db if

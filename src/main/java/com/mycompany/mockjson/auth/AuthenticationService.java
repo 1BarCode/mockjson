@@ -31,16 +31,13 @@ public class AuthenticationService {
         return savedUser;
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) throws UsernameNotFoundException {
+    public AuthenticationResponse authenticate(AuthenticationRequest request) throws Exception {
         // will throw exception if not successful
         authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-
         User user = userService.getUserByUsername(request.getUsername());
-
         String accessToken = jwtService.generateToken(user);
         // String refreshToken = jwtService.generateRefreshToken(savedUser);
-
         return new AuthenticationResponse(accessToken);
     }
 }

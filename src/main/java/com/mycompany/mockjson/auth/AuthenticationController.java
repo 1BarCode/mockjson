@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mycompany.mockjson.user.User;
-
 @RestController
 @RequestMapping("/v1/auth")
 public class AuthenticationController {
@@ -18,12 +16,9 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegistrationRequest request) throws Exception {
-        User registeredUser = authenticationService.registerGeneralUser(request);
+        authenticationService.registerGeneralUser(request);
 
-        // return ResponseEntity.ok(new RegistrationResponse("User registered
-        // successfully"));
-
-        return ResponseEntity.ok(registeredUser);
+        return ResponseEntity.ok(new RegistrationResponse("User registered successfully"));
     }
 
     @PostMapping("/authenticate")

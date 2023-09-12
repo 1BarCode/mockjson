@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,7 +28,11 @@ import jakarta.validation.constraints.Size;
 
 @RestController
 @RequestMapping("/v1/users")
+@PreAuthorize("hasAnyAuthority('general_admin:read', 'general_admin:write')")
 @Validated
+// @Secured({"ROLE_GENERAL_ADMIN", "ROLE_GENERAL_USER"})
+// also equiv to @PreAuthorize("hasRole('GENERAL_ADMIN') or
+// hasRole('GENERAL_USER')")
 public class UserController {
 
     @Autowired
@@ -43,6 +48,7 @@ public class UserController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('general_admin:read')")
     public ResponseEntity<?> listUsers() {
         return ResponseEntity.ok(userService.listUsers());
     }

@@ -45,12 +45,14 @@ public class UserService {
 
     public User createUser(User user) throws DuplicateResourceException {
         // check if user with username already exists
-        userRepo.findByUsername(user.getUsername())
-                .orElseThrow(() -> new DuplicateResourceException("Username is already taken"));
+        User existedUser = userRepo.findByUsername(user.getUsername()).orElse(null);
+        if (existedUser != null)
+            throw new DuplicateResourceException("Username already exists");
 
         // check if user with email already exists
-        userRepo.findByEmail(user.getEmail())
-                .orElseThrow(() -> new DuplicateResourceException("Email is already registered"));
+        existedUser = userRepo.findByEmail(user.getEmail()).orElse(null);
+        if (existedUser != null)
+            throw new DuplicateResourceException("Email already exists");
 
         return userRepo.save(user);
     }

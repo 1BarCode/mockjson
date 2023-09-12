@@ -53,7 +53,7 @@ public class UserPermission {
 
     @Transient
     public Permission getPermission() {
-        return id.getpermission();
+        return id.getPermission();
     }
 
     public void setPermission(Permission permission) {
@@ -62,7 +62,7 @@ public class UserPermission {
 
     @Override
     public String toString() {
-        return "Authority [" + id.getUser().getUsername() + ", " + id.getpermission().getName() + "]";
+        return "Authority [" + id.getUser().getUsername() + ", " + id.getPermission().getName() + "]";
     }
 
 }

@@ -46,6 +46,7 @@ public class User implements UserDetails {
     @GenericGenerator(name = "uuid2", strategy = "uuid2") // uuid2 means uuid stored as binary(16)
     @Column(name = "id", unique = true, nullable = false, updatable = false, columnDefinition = "BINARY(16) DEFAULT (UUID_TO_BIN(UUID()))")
     @NotNull(message = "Id cannot be null", groups = { Update.class }) // validation
+    @JsonIgnore
     private UUID id;
 
     @Column(name = "username", nullable = false, unique = true, length = 50)
@@ -90,6 +91,7 @@ public class User implements UserDetails {
 
     // relationships
     @OneToMany(mappedBy = "id.user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JsonIgnore
     private List<UserPermission> userPermissions = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -157,6 +159,7 @@ public class User implements UserDetails {
         userPermission.setUser(this);
     }
 
+    @Override
     public String getUsername() {
         return username;
     }
@@ -263,7 +266,9 @@ public class User implements UserDetails {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
 
         userPermissions.forEach(userPermission -> {
-            authorities.add(new SimpleGrantedAuthority(userPermission.getPermission().getName().name()));
+            String authority = userPermission.getPermission().getName().getPermission();
+            System.out.println("authority: " + authority);
+            authorities.add(new SimpleGrantedAuthority(authority));
         });
 
         return authorities;

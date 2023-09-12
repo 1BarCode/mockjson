@@ -26,7 +26,7 @@ public class AuthenticationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> userRepo.findByEmail(username)
+        return username -> userRepo.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User " + username + " not found."));
 
         // passing an object with single abstract method - we replaced with lambda above
@@ -34,7 +34,7 @@ public class AuthenticationConfig {
         // @Override
         // public UserDetails loadUserByUsername(String username) throws
         // UsernameNotFoundException {
-        // return userRepo.findByEmail(username)
+        // return userRepo.findByUsername(username)
         // .orElseThrow(
         // () -> new UsernameNotFoundException("User " + username + " not found."));
         // }

@@ -8,11 +8,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.client.HttpClientErrorException.NotFound;
+import org.springframework.web.client.HttpClientErrorException.Unauthorized;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -33,6 +36,54 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         error.setTimestamp(Instant.now());
         error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         error.addError(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        error.setPath(request.getServletPath());
+
+        LOGGER.error(exception.getMessage(), exception);
+
+        return error;
+    }
+
+    @ExceptionHandler(Unauthorized.class)
+    @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
+    @ResponseBody
+    public ErrorDTO handleUnauthorized(HttpServletRequest request, AccessDeniedException exception) {
+        ErrorDTO error = new ErrorDTO();
+
+        error.setTimestamp(Instant.now());
+        error.setStatus(HttpStatus.UNAUTHORIZED.value());
+        error.addError(exception.getMessage());
+        error.setPath(request.getServletPath());
+
+        LOGGER.error(exception.getMessage(), exception);
+
+        return error;
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(value = HttpStatus.FORBIDDEN)
+    @ResponseBody
+    public ErrorDTO handleAccessDenied(HttpServletRequest request, AccessDeniedException exception) {
+        ErrorDTO error = new ErrorDTO();
+
+        error.setTimestamp(Instant.now());
+        error.setStatus(HttpStatus.FORBIDDEN.value());
+        error.addError(exception.getMessage());
+        error.setPath(request.getServletPath());
+
+        LOGGER.error(exception.getMessage(), exception);
+
+        return error;
+    }
+
+    @ExceptionHandler(NotFound.class)
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public ErrorDTO handleNotFound(HttpServletRequest request, NotFound exception) {
+        ErrorDTO error = new ErrorDTO();
+
+        error.setTimestamp(Instant.now());
+        error.setStatus(HttpStatus.NOT_FOUND.value());
+        error.addError(exception.getMessage());
         error.setPath(request.getServletPath());
 
         LOGGER.error(exception.getMessage(), exception);
