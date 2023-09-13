@@ -57,6 +57,7 @@ public class PermissionService {
 
                 // create a new authority for each permission and add to user
                 permissions.forEach(permission -> {
+                        System.out.println("permission list: " + permission);
                         UserPermission userPermission = new UserPermission();
                         userPermission.setUser(user);
                         userPermission.setPermission(permission);
