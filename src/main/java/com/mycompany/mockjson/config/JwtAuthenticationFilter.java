@@ -1,4 +1,4 @@
-package com.mycompany.mockjson.auth;
+package com.mycompany.mockjson.config;
 
 import java.io.IOException;
 
@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.mycompany.mockjson.auth.JwtService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
