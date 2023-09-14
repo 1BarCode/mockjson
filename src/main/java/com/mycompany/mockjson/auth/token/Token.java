@@ -6,6 +6,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import com.mycompany.mockjson.user.User;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -26,18 +27,19 @@ public class Token {
     @Column(name = "id", unique = true, updatable = false, nullable = false, columnDefinition = "BINARY(16) DEFAULT (UUID_TO_BIN(UUID()))")
     private UUID id;
 
-    @Column(name = "token", nullable = false, unique = true)
-    private String token;
+    @Column(name = "value", nullable = false, unique = true)
+    private String value;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "token_type", nullable = false)
     private TokenType tokenType = TokenType.BEARER;
 
-    private boolean revoked;
+    private boolean revoked = false;
 
-    private boolean expired;
+    private boolean expired = false;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH,
+            CascadeType.DETACH })
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -47,14 +49,6 @@ public class Token {
 
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     public TokenType getTokenType() {
@@ -91,7 +85,15 @@ public class Token {
 
     @Override
     public String toString() {
-        return "Token [id=" + id + ", token=" + token + ", tokenType=" + tokenType + "]";
+        return "Token [id=" + id + ", token=" + value + ", tokenType=" + tokenType + "]";
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
 }

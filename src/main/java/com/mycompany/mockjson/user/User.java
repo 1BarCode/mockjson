@@ -17,6 +17,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mycompany.mockjson.auth.token.Token;
 import com.mycompany.mockjson.auth.userpermission.UserPermission;
 import com.mycompany.mockjson.comment.Comment;
 import com.mycompany.mockjson.post.Post;
@@ -110,6 +111,10 @@ public class User implements UserDetails {
     @JsonIgnore
     private List<Task> tasks = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Token> tokens;
+
     public UUID getId() {
         return id;
     }
@@ -162,6 +167,19 @@ public class User implements UserDetails {
     @Override
     public String getUsername() {
         return username;
+    }
+
+    public List<Token> getTokens() {
+        return tokens;
+    }
+
+    public void setTokens(List<Token> tokens) {
+        this.tokens = tokens;
+    }
+
+    public void addToken(Token token) {
+        tokens.add(token);
+        token.setUser(this);
     }
 
     public void setUsername(String username) {

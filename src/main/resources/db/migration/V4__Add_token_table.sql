@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS `token`;
 
 CREATE TABLE `token` (
     `id` binary(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID())),
-    `token` varchar(400) NOT NULL,
+    `value` varchar(400) NOT NULL,
     `token_type` ENUM('BEARER') NOT NULL,
     `user_id` binary(16) NOT NULL,
     `revoked` tinyint(1) NOT NULL DEFAULT 0,

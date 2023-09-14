@@ -77,10 +77,17 @@ public class UserService {
 
         existingUser.setUsername(user.getUsername());
         existingUser.setEmail(user.getEmail());
+        existingUser.setPassword(user.getPassword());
         existingUser.setFirstName(user.getFirstName());
         existingUser.setLastName(user.getLastName());
+        existingUser.setEnabled(user.isEnabled());
+        existingUser.setLocked(user.isLocked());
 
         return userRepo.save(existingUser);
+    }
+
+    public User save(User user) {
+        return userRepo.save(user);
     }
 
     public void deleteUserById(UUID id) throws ResourceNotFoundException {
