@@ -18,8 +18,8 @@ public class AuthenticationResponse {
     @JsonProperty("refresh_token")
     private String refreshToken;
 
-    @JsonProperty("scope")
-    private String scope;
+    // @JsonProperty("scope")
+    // private String scope;
 
     @JsonProperty("username")
     private String username;
@@ -73,13 +73,13 @@ public class AuthenticationResponse {
         this.expiresIn = expiresIn;
     }
 
-    public String getScope() {
-        return scope;
-    }
+    // public String getScope() {
+    // return scope;
+    // }
 
-    public void setScope(String scope) {
-        this.scope = scope;
-    }
+    // public void setScope(String scope) {
+    // this.scope = scope;
+    // }
 
     public String getUsername() {
         return username;

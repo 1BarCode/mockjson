@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.mockjson.auth.permission.PermissionService;
 import com.mycompany.mockjson.auth.token.Token;
-import com.mycompany.mockjson.auth.token.TokenRepo;
+import com.mycompany.mockjson.auth.token.TokenService;
 import com.mycompany.mockjson.auth.token.TokenType;
 import com.mycompany.mockjson.user.User;
 import com.mycompany.mockjson.user.UserService;
@@ -32,7 +32,7 @@ public class AuthenticationService {
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
-    private TokenRepo tokenRepo;
+    private TokenService tokenService;
 
     public User registerGeneralUser(RegistrationRequest request) throws Exception {
         User user = userService.constructUserFromRequest(request);
@@ -50,6 +50,9 @@ public class AuthenticationService {
         String accessTokenString = jwtService.generateToken(user);
         String refreshTokenString = jwtService.generateRefreshToken(user);
 
+        // revoke all previous token before granting new one
+        revokeAllUserTokens(user);
+
         Token accessToken = new Token();
         accessToken.setTokenType(TokenType.BEARER);
         accessToken.setValue(accessTokenString);
@@ -57,7 +60,13 @@ public class AuthenticationService {
         user.addToken(accessToken);
         userService.save(user);
 
-        return new AuthenticationResponse(accessTokenString, refreshTokenString);
+        AuthenticationResponse authResponse = new AuthenticationResponse(accessTokenString, refreshTokenString);
+        authResponse.setEmail(user.getEmail());
+        authResponse.setFirstName(user.getFirstName());
+        authResponse.setLastName(user.getLastName());
+        authResponse.setUsername(user.getUsername());
+
+        return authResponse;
     }
 
     public void refreshToken(HttpServletRequest request, HttpServletResponse response)
@@ -88,13 +97,13 @@ public class AuthenticationService {
     }
 
     private void revokeAllUserTokens(User user) {
-        var validUserTokens = tokenRepo.findAllValidTokensByUser(user.getId());
+        var validUserTokens = tokenService.findAllValidTokensByUser(user.getId());
         if (validUserTokens.isEmpty())
             return;
         validUserTokens.forEach(token -> {
             token.setExpired(true);
             token.setRevoked(true);
         });
-        tokenRepo.saveAll(validUserTokens);
+        tokenService.saveAll(validUserTokens);
     }
 }

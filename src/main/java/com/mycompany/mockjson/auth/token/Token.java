@@ -38,7 +38,7 @@ public class Token {
 
     private boolean expired = false;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH,
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH,
             CascadeType.DETACH })
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

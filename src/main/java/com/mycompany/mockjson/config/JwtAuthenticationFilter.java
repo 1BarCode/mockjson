@@ -13,6 +13,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.mycompany.mockjson.auth.JwtService;
+import com.mycompany.mockjson.auth.token.Token;
+import com.mycompany.mockjson.auth.token.TokenService;
+import com.mycompany.mockjson.exception.ResourceNotFoundException;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -27,6 +30,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    @Autowired
+    private TokenService tokenService;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -40,15 +46,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String jwt = authHeader.substring(7);
         String username = jwtService.extractUsername(jwt);
 
+        // check to see if the authentication in the security context is already there
+        // or not
         Boolean isAlreadyAuthenticated = SecurityContextHolder.getContext().getAuthentication() != null;
 
         if (username != null && !isAlreadyAuthenticated) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username); // get user details from db if
                                                                                        // not authenticated
-            Boolean isValidToken = jwtService.validateToken(jwt, userDetails);
 
-            if (isValidToken) {
+            // check if token is valid and not expired or revoked from db
+            Token dbToken = null;
+            try {
+                dbToken = tokenService.findByValue(jwt);
+            } catch (ResourceNotFoundException e) {
+                filterChain.doFilter(request, response); // skip to next filter in the chain
+                return;
+            }
+            boolean tokenIsNotExpiredOrRevoked = dbToken != null && !dbToken.isExpired() && !dbToken.isRevoked();
+
+            // validate token claim with details
+            boolean isValidToken = jwtService.validateToken(jwt, userDetails);
+
+            if (isValidToken && tokenIsNotExpiredOrRevoked) {
                 // token is needed to update security context to authenticated state
+                // create new authentication object
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request)); // add details of the
