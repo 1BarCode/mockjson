@@ -4,8 +4,13 @@ package com.mycompany.mockjson.auth.permission;
  * Resouce-based and role-based authorization
  */
 public enum PermissionName {
-    // general role-based permissions
-    GENERAL_USER("general_user:%"),
+    // Roles only
+    ROLE_USER("ROLE_USER"),
+    ROLE_MODERATOR("ROLE_MODERATOR"),
+    ROLE_ADMIN("ROLE_ADMIN"),
+
+    // role-based permissions
+    GENERAL_USER("general_user:%"), // used for searching only
     GENERAL_USER_READ("general_user:read"),
     GENERAL_USER_WRITE("general_user:write"),
     GENERAL_USER_DELETE("general_user:delete"),

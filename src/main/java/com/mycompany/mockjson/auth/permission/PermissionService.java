@@ -26,38 +26,20 @@ public class PermissionService {
          * @throws Exception
          */
         public User grantGeneralUserPermissions(User user) throws Exception {
-                // Permission generalUserRead =
-                // permissionRepo.findByName(PermissionName.GENERAL_USER_READ)
-                // .orElseThrow(() -> new Exception("Cannot grant general user read
-                // permissions"));
+                Permission userRole = permissionRepo.findByName(PermissionName.ROLE_USER)
+                                .orElseThrow(() -> new Exception("Cannot grant user role"));
 
-                // Permission generalUserWrite =
-                // permissionRepo.findByName(PermissionName.GENERAL_USER_WRITE)
-                // .orElseThrow(() -> new Exception("Cannot grant general user write
-                // permissions"));
+                List<Permission> generalUserPermissions = permissionRepo
+                                .findByNameStartsWith(PermissionName.GENERAL_USER);
 
-                // Permission generalUserDelete =
-                // permissionRepo.findByName(PermissionName.GENERAL_USER_DELETE)
-                // .orElseThrow(() -> new Exception("Cannot grant general user delete
-                // permissions"));
+                generalUserPermissions.add(userRole); // include the general ROLE_USER
 
-                // Permission generalUserUpdate =
-                // permissionRepo.findByName(PermissionName.GENERAL_USER_UPDATE)
-                // .orElseThrow(() -> new Exception("Cannot grant general user update
-                // permissions"));
-
-                // List<Permission> permissions = List.of(generalUserRead, generalUserWrite,
-                // generalUserDelete, generalUserUpdate);
-
-                List<Permission> permissions = permissionRepo.findByNameStartsWith(PermissionName.GENERAL_USER);
-
-                if (permissions.size() == 0) {
+                if (generalUserPermissions.size() == 0) {
                         throw new Exception("Cannot grant general user permissions");
                 }
 
                 // create a new authority for each permission and add to user
-                permissions.forEach(permission -> {
-                        System.out.println("permission list: " + permission);
+                generalUserPermissions.forEach(permission -> {
                         UserPermission userPermission = new UserPermission();
                         userPermission.setUser(user);
                         userPermission.setPermission(permission);
