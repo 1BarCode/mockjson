@@ -17,6 +17,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mycompany.mockjson.auth.apikey.ApiKey;
 import com.mycompany.mockjson.auth.token.Token;
 import com.mycompany.mockjson.auth.userpermission.UserPermission;
 import com.mycompany.mockjson.comment.Comment;
@@ -113,7 +114,13 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<Token> tokens;
+    private List<Token> tokens = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<ApiKey> apiKeys = new ArrayList<>();
+
+    // methods
 
     public UUID getId() {
         return id;
@@ -169,6 +176,10 @@ public class User implements UserDetails {
         return username;
     }
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public List<Token> getTokens() {
         return tokens;
     }
@@ -182,8 +193,17 @@ public class User implements UserDetails {
         token.setUser(this);
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public List<ApiKey> getApiKeys() {
+        return apiKeys;
+    }
+
+    public void setApiKeys(List<ApiKey> apiKeys) {
+        this.apiKeys = apiKeys;
+    }
+
+    public void addApiKey(ApiKey apiKey) {
+        apiKeys.add(apiKey);
+        apiKey.setUser(this);
     }
 
     public String getEmail() {

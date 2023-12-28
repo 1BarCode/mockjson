@@ -10,4 +10,3 @@ CREATE TABLE `token` (
     PRIMARY KEY (`id`),
     CONSTRAINT `token_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB;
-)
